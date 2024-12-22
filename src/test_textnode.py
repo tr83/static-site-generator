@@ -35,6 +35,23 @@ class TestTextNode(unittest.TestCase):
         self.assertIsNone(node.url)
         self.assertIsNotNone(node2.url)
 
+    def test_text_node_to_html_node(self):
+        node = TextNode("This is a text node", TextType.BOLD)
+        html_node = TextNode.text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, 'b')
+        self.assertEqual(html_node.value, 'This is a text node')
+        self.assertIsNone(html_node.props)
+
+    def test_text_node_to_html_node_image(self):
+        node = TextNode("This is an alt text", TextType.IMAGE, 'https://www.url.com')
+        html_node = TextNode.text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, 'img')
+        self.assertEqual(html_node.value, '')
+        self.assertEqual(html_node.props_to_html(), ' src="https://www.url.com" alt="This is an alt text"')
+
+    def test_text_node_to_html_node_missing_type(self):
+        node = TextNode("This is an alt text", None, None)
+        self.assertRaises(Exception, TextNode.text_node_to_html_node, node)
 
 if __name__ == "__main__":
     unittest.main()
