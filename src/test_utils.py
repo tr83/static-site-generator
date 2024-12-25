@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from utils import split_nodes_delimiter
+from utils import extract_markdown_links, split_nodes_delimiter, extract_markdown_images
 
 
 class UtilsTest(unittest.TestCase):
@@ -53,3 +53,19 @@ class UtilsTest(unittest.TestCase):
                 TextNode("Code block as a whole given text", TextType.CODE)
             ]
         )
+
+    def test_extract_markdown_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertEqual(extract_markdown_images(text), [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")])
+
+    def test_extract_markdown_images_and_ignore_links(self):
+        text = "Rock'n'Roll ![Rock'n'Roll](https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Rock_and_Roll_Hall_of_Fame_-_Joy_of_Museums_1.jpg/250px-Rock_and_Roll_Hall_of_Fame_-_Joy_of_Museums_1.jpg) with Lemmy [lemmy kilmister](https://i.imgur.com/KKAOEnG.jpeg)"
+        self.assertEqual(extract_markdown_images(text), [("Rock'n'Roll", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Rock_and_Roll_Hall_of_Fame_-_Joy_of_Museums_1.jpg/250px-Rock_and_Roll_Hall_of_Fame_-_Joy_of_Museums_1.jpg")])
+    
+    def test_extract_markdown_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        self.assertEqual(extract_markdown_links(text), [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")])
+
+    def test_extract_markdown_links_and_ignore_images(self):
+        text = "Rock'n'Roll ![Rock'n'Roll](https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Rock_and_Roll_Hall_of_Fame_-_Joy_of_Museums_1.jpg/250px-Rock_and_Roll_Hall_of_Fame_-_Joy_of_Museums_1.jpg) with Lemmy [lemmy kilmister](https://i.imgur.com/KKAOEnG.jpeg)"
+        self.assertEqual(extract_markdown_links(text), [("lemmy kilmister", "https://i.imgur.com/KKAOEnG.jpeg")])
