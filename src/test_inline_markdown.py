@@ -1,10 +1,10 @@
 import unittest
 
 from textnode import TextNode, TextType
-from utils import extract_markdown_links, split_nodes_delimiter, extract_markdown_images, split_nodes_image_or_link, text_to_textnodes
+from inline_markdown import extract_markdown_links, split_nodes_delimiter, extract_markdown_images, split_nodes_image_or_link, text_to_textnodes
 
 
-class UtilsTest(unittest.TestCase):
+class TestInlineMarkdown(unittest.TestCase):
     def test_split_nodes_delimiter_with_invalid_delimiter(self):
         nodes = [
             TextNode("test value", TextType.TEXT)
