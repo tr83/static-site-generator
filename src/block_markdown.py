@@ -33,34 +33,33 @@ def markdown_to_blocks(markdown):
 
     return blocks
 
-def block_to_block_type(markdown):
-    if markdown.startswith('# ') or markdown.startswith('## ') or markdown.startswith('### ') or markdown.startswith('#### ') or markdown.startswith('##### ') or markdown.startswith('###### '):
+def block_to_block_type(block):
+    lines = block.split("\n")
+
+    if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
         return BlockType.HEADING.value
-    elif markdown.startswith('```') and markdown.endswith('```'):
+    if len(lines) > 1 and lines[0].startswith("```") and lines[-1].startswith("```"):
         return BlockType.CODE.value
-    
-    lines = markdown.split('\n')
-
-    type = None
-    for line in lines:
-        if (type == None or type == BlockType.QUOTE.value) and line.startswith('>'):
-            type = BlockType.QUOTE.value
-        elif (type == None or type == BlockType.UNORDERED_LIST.value) and (line.startswith('* ') or line.startswith('- ')):
-            type = BlockType.UNORDERED_LIST.value
-        elif re.match(r'^\d+\.', line):
-            type = BlockType.ORDERED_LIST.value
-            # Validate the ordered list block
-            for j, line in enumerate(lines):
-                expected_number = j + 1
-                if not re.match(rf'^{expected_number}\. ', line):
-                    type = BlockType.PARAGRAPH.value
-            if type == BlockType.ORDERED_LIST.value:
-                # Correct the ordered list block
-                for j, line in enumerate(lines):
-                    expected_number = j + 1
-                    lines[j] = f'{expected_number}. ' + line.lstrip('0123456789. ')
-                markdown = '\n'.join(lines)
-        else:
-            type = BlockType.PARAGRAPH.value
-
-    return type
+    if block.startswith(">"):
+        for line in lines:
+            if not line.startswith(">"):
+                return BlockType.PARAGRAPH.value
+        return BlockType.QUOTE.value
+    if block.startswith("* "):
+        for line in lines:
+            if not line.startswith("* "):
+                return BlockType.PARAGRAPH.value
+        return BlockType.UNORDERED_LIST.value
+    if block.startswith("- "):
+        for line in lines:
+            if not line.startswith("- "):
+                return BlockType.PARAGRAPH.value
+        return BlockType.UNORDERED_LIST.value
+    if block.startswith("1. "):
+        i = 1
+        for line in lines:
+            if not line.startswith(f"{i}. "):
+                return BlockType.PARAGRAPH.value
+            i += 1
+        return BlockType.ORDERED_LIST.value
+    return BlockType.PARAGRAPH.value

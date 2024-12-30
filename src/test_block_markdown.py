@@ -74,11 +74,19 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         self.assertEqual(block_to_block_type(text), 'paragraph')
 
     def test_block_to_block_type_code(self):
-        text = '```This is a code block```'
+        text = '''```
+This is a code block
+```'''
         self.assertEqual(block_to_block_type(text), 'code')
-        text = '```    This is a code block    ```'
+        text = '''```python
+print("Hello, world!")
+
+```'''
         self.assertEqual(block_to_block_type(text), 'code')
-        text = '```This is a code block\n`With multiple lines`\nand more than three ending characters````````'
+        text = '''```python
+def hello_world():
+    print("Hello, world!")
+````````'''
         self.assertEqual(block_to_block_type(text), 'code')
 
     def test_block_to_block_type_invalid_code(self):
