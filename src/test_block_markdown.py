@@ -1,6 +1,6 @@
 import unittest
 
-from block_markdown import markdown_to_blocks, block_to_block_type, markdown_to_html_node
+from block_markdown import extract_title, markdown_to_blocks, block_to_block_type, markdown_to_html_node
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -236,6 +236,22 @@ this is paragraph text
         self.assertEqual(
             html,
             "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
+        )
+
+    def test_extract_title(self):
+        markdown = "# This is a title\n\nThis is a paragraph"
+        self.assertEqual(extract_title(markdown), "This is a title")
+
+    def test_extract_title_odd_position(self):
+        markdown = "### Heading 3.\n\nThis is a paragraph\n\n# This is a title"
+        self.assertEqual(extract_title(markdown), "This is a title")
+
+    def test_extract_title_without_a_title(self):
+        markdown = "This is not a title\n\nThis is a paragraph"
+        self.assertRaises(
+            Exception,
+            extract_title,
+            markdown
         )
 
 if __name__ == "__main__":
